@@ -135,7 +135,7 @@ You:  2 * 8
 Bot:  🧮 2 * 8 = 16                               [calculator | 1.00]
 
 You:  weather in Lahore
-Bot:  ☁️ Weather in Lahore: Mist +29°C            [weather | 1.00]
+Bot:  ☁️ Weather in Lahore: Mist +29°C            [weather | 1.00] 
 
 You:  who invented the internet?
 Bot:  The internet evolved from ARPANET...         [llm | 0.21]
@@ -159,12 +159,12 @@ decodebot/
 
 ## 🛣️ Roadmap
 
-- [ ] Persistent chat history (SQLite)
-- [ ] User authentication
-- [ ] Deploy to Streamlit Cloud
-- [ ] Add more intents via JSON config (no code changes)
-- [ ] Swap SimpleEmbedder for sentence-transformers when online
-- [ ] Voice input support
+- Persistent chat history (SQLite)
+- User authentication
+- Deploy to Streamlit Cloud
+- Add more intents via JSON config (no code changes)
+- Swap SimpleEmbedder for sentence-transformers when online
+- Voice input support
 
 ---
 
