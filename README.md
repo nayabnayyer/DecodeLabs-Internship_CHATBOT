@@ -1,181 +1,302 @@
-# 🤖 DecodeBot — Hybrid AI Chatbot
+# 🤖 DecodeBot — Hybrid Conversational AI System
 
-A production-style conversational AI built from scratch in Python — combining rule-based NLP, semantic vector search, and a Gemini LLM fallback into one clean Streamlit web app.
+A hybrid conversational AI application built in Python that combines rule-based processing, semantic retrieval, and Large Language Model (LLM) generation into a multi-stage chatbot architecture.
+
+DecodeBot explores how traditional NLP approaches and modern generative AI can work together to create reliable and flexible conversational systems.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue?style=flat-square&logo=python&logoColor=white)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.0+-red?style=flat-square&logo=streamlit&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-App-red?style=flat-square&logo=streamlit&logoColor=white)
 ![Gemini](https://img.shields.io/badge/Gemini-2.0_Flash-purple?style=flat-square&logo=google&logoColor=white)
 ![FAISS](https://img.shields.io/badge/FAISS-Vector_Search-orange?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+![NLP](https://img.shields.io/badge/NLP-Hybrid_AI-green?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
 ---
 
-## ✨ What Is This?
+# 🌟 Overview
 
-DecodeBot is not a simple if-else chatbot. It's a **4-layer hybrid NLP system** that routes every message through an intelligent pipeline before deciding how to respond — the same architecture pattern used in production chatbots.
+Modern conversational AI systems require a balance between:
 
-```
-User Input
-    ↓
-🔧 Tool Layer        →  calculator / weather / web search
-    ↓
-📋 Rule Engine       →  exact match + prefix rules ("what is X")
-    ↓
-🧠 Semantic Search   →  FAISS vector similarity (offline embeddings)
-    ↓
-✨ Gemini LLM        →  real reasoning fallback for anything unknown
-```
+- predictable responses
+- efficient retrieval
+- flexible reasoning
+
+DecodeBot implements a hybrid approach where user queries pass through multiple processing layers before generating a response.
+
+Instead of relying only on an LLM, the system combines:
+
+- deterministic rule-based responses
+- semantic similarity search
+- external tools
+- Gemini LLM fallback generation
+
+This creates a chatbot architecture that is both efficient and adaptable.
 
 ---
 
-## 🚀 Features
+# ✨ Features
 
 | Feature | Description |
 |---|---|
-| 🔧 **Calculator** | Evaluates `2 + 2`, `10 * 5`, `100 / 4` — numeric, not string concat |
-| ☁️ **Live Weather** | Real-time weather via wttr.in — "weather in Lahore" |
-| 🔍 **Web Search** | DuckDuckGo instant answers — "search for black holes" |
-| 🧠 **Semantic Search** | FAISS + TF-IDF embeddings for meaning-aware intent matching |
-| ✨ **Gemini Fallback** | Google Gemini 2.0 Flash answers anything the rules can't |
-| 💬 **Multi-session** | Multiple chat sessions with sidebar navigation |
-| 🔎 **Chat Search** | Search across all past chats by keyword |
-| 📝 **Auto-rename** | Chats rename themselves from your first message |
-| 🧠 **Name Memory** | Bot remembers your name for the whole session |
-| 📊 **Debug Badges** | Every response shows its source layer + confidence score |
+| 🧠 Hybrid AI Pipeline | Combines rules, retrieval, and LLM generation |
+| 🔍 Semantic Search | FAISS-based similarity matching for intent retrieval |
+| ✨ Gemini Integration | Handles unknown and complex queries |
+| 🔧 Tool Layer | Calculator, weather, and web search capabilities |
+| 💬 Multi-turn Conversation | Maintains session-based chat history |
+| 📝 Chat Management | Multiple conversations and chat search |
+| 🎯 Confidence Routing | Selects response source based on similarity score |
+| 🎨 Streamlit Interface | Interactive chatbot UI with custom styling |
 
 ---
 
-## 🏗️ Architecture Deep Dive
+# 🏗️ System Architecture
 
-### Layer 1 — Tool Engine
-Intercepts structured requests before any NLP runs. Receives **raw input** (symbols preserved) so `2 + 2` isn't mangled into `22` by text cleaning.
-
-### Layer 2 — Rule Engine
-Exact pattern matching + prefix rules. Fast, deterministic, zero latency. Handles `"what is python"`, `"tell me about AI"`, `"explain ML"` with `score=1.0`.
-
-### Layer 3 — Semantic Search
-Custom `SimpleEmbedder` builds a TF-IDF-style vocabulary from intent patterns, encodes them as normalized float vectors, and stores them in a **FAISS IndexFlatIP** (inner product = cosine similarity). Fully offline — no HuggingFace calls at runtime.
-
-```python
-# Confidence thresholds
-score >= 0.70  →  respond with intent (high confidence)
-score >= 0.45  →  respond with intent (low confidence note)
-score < 0.45   →  escalate to Gemini LLM
+```
+User Input
+|
+↓
+🔧 Tool Layer
+(Calculator / Weather / Search)
+|
+↓
+📋 Rule Engine
+(Deterministic Responses)
+|
+↓
+🧠 Semantic Retrieval
+(FAISS Similarity Search)
+|
+↓
+✨ Gemini LLM
+(Generative Response)
 ```
 
-### Layer 4 — Gemini LLM Fallback
-When all layers fail, the last 4 turns of chat history are injected into a Gemini 2.0 Flash prompt for context-aware reasoning. Unknown inputs get real answers instead of "I don't understand."
+The system follows a layered decision process:
+
+1. Handle structured requests with specialized tools
+2. Use deterministic rules for known patterns
+3. Retrieve relevant responses through semantic similarity
+4. Use Gemini when the query requires broader reasoning
 
 ---
 
-## 🖥️ UI
+# 🔧 Key Technical Decisions
 
-Built with Streamlit + custom CSS — warm cream and rose gold theme.
+## Hybrid Routing Architecture
 
-- Chat bubbles (user right, bot left) with avatars
-- Sidebar with session management, search, and New Chat
-- Colour-coded debug badges per response:
-  - 🟢 `rule` · 🔵 `semantic` · 🟠 `semantic-low` · 🟣 `llm` · 🔷 `weather` · 🟤 `calculator`
+DecodeBot avoids sending every query directly to an LLM.
 
----
+Instead:
 
-## ⚙️ Getting Started
+- Simple queries are handled through fast deterministic methods
+- Similar known queries are retrieved through semantic search
+- Complex questions are forwarded to the LLM
 
-### 1. Clone the repo
-```bash
-git clone https://github.com/your-username/decodebot.git
-cd decodebot
-```
-
-### 2. Create a virtual environment
-```bash
-python -m venv chatbot_env
-chatbot_env\Scripts\activate      # Windows
-source chatbot_env/bin/activate   # Mac/Linux
-```
-
-### 3. Install dependencies
-```bash
-pip install streamlit numpy faiss-cpu requests google-generativeai
-```
-
-### 4. Add your Gemini API key
-Get a free key at **https://aistudio.google.com/**
-
-Open `decodebot_final.py` and replace:
-```python
-API_KEY = os.environ.get("GEMINI_API_KEY", "YOUR_API_KEY_HERE")
-```
-
-Or set it as an environment variable (recommended):
-```bash
-set GEMINI_API_KEY=your_key_here        # Windows
-export GEMINI_API_KEY=your_key_here     # Mac/Linux
-```
-
-### 5. Run
-```bash
-python -m streamlit run decodebot_final.py
-```
-
-Open **http://localhost:8501** 🎉
+This reduces unnecessary API calls while maintaining conversational flexibility.
 
 ---
 
-## 💬 Example Conversations
+## Semantic Retrieval
+
+The retrieval component uses vector similarity search to identify relevant intents.
+
+Workflow:
 
 ```
-You:  hi
-Bot:  Hello! 👋 How can I help you today?         [rule | 1.00]
+User Query
+↓
+Text Representation
+↓
+Vector Similarity Search
+↓
+Confidence Evaluation
+↓
+Response Selection
+```
 
-You:  what is machine learning?
-Bot:  ML is a subset of AI where systems learn...  [rule | 1.00]
+FAISS is used for efficient similarity matching between query vectors and stored intent patterns.
 
-You:  2 * 8
-Bot:  🧮 2 * 8 = 16                               [calculator | 1.00]
+---
 
-You:  weather in Lahore
-Bot:  ☁️ Weather in Lahore: Mist +29°C            [weather | 1.00] 
+## Confidence-Based Routing
 
-You:  who invented the internet?
-Bot:  The internet evolved from ARPANET...         [llm | 0.21]
+Response selection is based on similarity confidence:
 
-You:  my name is Nayab
-Bot:  Nice to meet you, Nayab! 🌸 Ask me anything.
+```
+High confidence
+↓
+Semantic response
+
+Low confidence
+↓
+Fallback handling
+
+Unknown query
+↓
+Gemini LLM generation
 ```
 
 ---
 
-## 📁 Project Structure
+## LLM Fallback
+
+When previous layers cannot confidently answer a query, Gemini generates a response using recent conversation context.
+
+This provides flexibility for open-ended questions while maintaining controlled routing.
+
+---
+
+# 🚀 Features Demonstration
+
+## Calculator
 
 ```
+User:
+2 * 8
+
+Bot:
+2 * 8 = 16
+```
+
+---
+
+## Semantic Understanding
+
+```
+User:
+Explain artificial intelligence
+
+Bot:
+AI is a field of computer science...
+```
+
+---
+
+## Weather Tool
+
+```
+User:
+Weather in Lahore
+
+Bot:
+Current weather information retrieved
+```
+
+---
+
+## LLM Knowledge Query
+
+```
+User:
+Who invented the internet?
+
+Bot:
+Generates contextual explanation through Gemini
+```
+
+---
+
+# 🖥️ User Interface
+
+Built using Streamlit with custom CSS.
+
+Features include:
+
+- Chat-style interface
+- Sidebar navigation
+- Multiple sessions
+- Conversation history
+- Response source indicators
+- Interactive user experience
+
+---
+
+# 🧪 Testing
+
+The system was tested across different query categories:
+
+| Category | Example |
+|-|-|
+| Greetings | Hello, Hi |
+| Knowledge Questions | Explain AI |
+| Mathematical Queries | 2 + 2 |
+| External Information | Weather requests |
+| Unknown Questions | LLM fallback testing |
+
+Testing focused on verifying correct routing between chatbot components.
+
+---
+
+# 📁 Project Structure
+
+
 decodebot/
 │
-├── decodebot_final.py    # Complete app — one file
-└── README.md             # You're reading this
+├── decodebot_final.py
+│
+├── README.md
+│
+└── requirements.txt
+
+
+---
+
+# ⚙️ Installation
+
+## Clone Repository
+
+```bash
+git clone https://github.com/your-username/decodebot.git
+
+cd decodebot
 ```
+Install Dependencies
+```
+pip install streamlit numpy faiss-cpu requests google-generativeai
+```
+Configure Gemini API
+```
+Set your API key:
+```
+Windows:
+```
+set GEMINI_API_KEY=your_key_here
+```
+Mac/Linux:
+```
+export GEMINI_API_KEY=your_key_here
+Run Application
+streamlit run decodebot_final.py
+```
+Open:
+```
+http://localhost:8501
+```
+# ⚠️ Limitations
+Semantic retrieval currently uses lightweight vector representations.
+Chat memory is session-based rather than permanently stored.
+LLM responses depend on external API availability.
+Large-scale benchmark evaluation has not yet been performed.
+🔮 Future Improvements
 
----
+# Possible improvements include:
 
-## 🛣️ Roadmap
+Replace lightweight embeddings with transformer-based embeddings
+Implement Retrieval-Augmented Generation (RAG)
+Add persistent database storage
+Evaluate chatbot performance using NLP metrics
+Add voice interaction capabilities
+Improve explainability of chatbot decisions
+🧠 What I Learned
 
-- Persistent chat history (SQLite)
-- User authentication
-- Deploy to Streamlit Cloud
-- Add more intents via JSON config (no code changes)
-- Swap SimpleEmbedder for sentence-transformers when online
-- Voice input support
+# Through this project, I developed experience in:
 
----
-
-## 🧠 What I Learned Building This
-
-- Why text cleaning must be scoped — stripping symbols before tool detection breaks math
-- How FAISS inner product search works as cosine similarity on normalized vectors
-- The difference between rule-based, semantic, and LLM-based NLP — and when to use each
-- How Streamlit session state enables multi-turn, multi-session conversation
-
----
+Designing hybrid AI architectures
+Combining rule-based NLP with generative AI
+Implementing semantic retrieval systems
+Working with vector similarity search
+Integrating Large Language Models into applications
+Building interactive AI applications using Streamlit
 
 ## 👩‍💻 Author
 
